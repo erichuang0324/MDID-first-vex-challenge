@@ -15,6 +15,12 @@ using namespace vex;
 competition Competition;
 
 // define your global instances of motors and other devices here
+// Motors — port number must match what's plugged in on the brain
+motor leftMotor = motor(PORT1, ratio18_1, false);  // false = not reversed
+motor rightMotor = motor(PORT2, ratio18_1, true);  // true = reversed (so both drive forward)
+
+// Controller
+controller Controller = controller(primary);
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
@@ -43,9 +49,8 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  // ..........................................................................
-  // Insert autonomous user code here.
-  // ..........................................................................
+  leftMotor.spin(forward, 50, percent);
+  rightMotor.spin(forward, 50, percent);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -65,10 +70,8 @@ void usercontrol(void) {
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
 
-    // ........................................................................
-    // Insert user code here. This is where you use the joystick values to
-    // update your motors, etc.
-    // ........................................................................
+    leftMotor.spin(forward, Controller.Axis3.position(), percent);
+    rightMotor.spin(forward, Controller.Axis2.position(), percent);
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
