@@ -8,6 +8,8 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include <iostream>
+#include <cmath>
 
 using namespace vex;
 
@@ -17,10 +19,10 @@ competition Competition;
 // define your global instances of motors and other devices here
 // Motors — port number must match what's plugged in on the brain
 
-const int32_t motorPort1 = 11;
-const int32_t motorPort2 = 12;
+const int motorPort1 = 6;
+const int motorPort2 = 7;
 
-motor leftMotor = motor(motorPort1, ratio18_1, false);  // false = not reversed
+motor leftMotor = motor(motorPort1, ratio18_1, true);  // false = not reversed
 motor rightMotor = motor(motorPort2, ratio18_1, true);  // true = reversed (so both drive forward)
 // Controller
 controller Controller = controller(primary);
@@ -54,8 +56,9 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 void autonomous(void) {
-  leftMotor.spin(forward, 50, percent);
-  rightMotor.spin(forward, 50, percent);
+  // leftMotor.spin(forward, 50, percent);
+  // rightMotor.spin(forward, 50, percent);
+  wait(2, seconds);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -75,8 +78,27 @@ void usercontrol(void) {
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
 
-    leftMotor.spin(forward, Controller.Axis3.position(), percent);
-    rightMotor.spin(forward, Controller.Axis2.position(), percent);
+    // Use tank controls: left stick vertical = Axis3, right stick vertical = Axis2
+    int leftSpeed = Controller.Axis3.position();
+    int rightSpeed = Controller.Axis2.position();
+
+    // Deadband to avoid controller drift
+    const int deadband = 5;
+    if (std::abs(leftSpeed) < deadband) leftSpeed = 0;
+    if (std::abs(rightSpeed) < deadband) rightSpeed = 0;
+
+    leftMotor.spin(forward, leftSpeed, percent);
+    rightMotor.spin(forward, rightSpeed, percent);
+
+    /* CONTROLLER INPUT DEBUG INFO
+    static int count = 0;
+    if (count++ % 10 == 0) {
+      printf("Axis1: %d\n", Controller.Axis1.position());
+      printf("Axis2: %d\n", Controller.Axis2.position());
+      printf("Axis3: %d\n", Controller.Axis3.position());
+      printf("Axis4: %d\n", Controller.Axis4.position());
+    }
+    */
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
