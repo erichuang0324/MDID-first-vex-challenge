@@ -22,9 +22,10 @@ const int32_t motorPort2 = 12;
 
 motor leftMotor = motor(motorPort1, ratio18_1, false);  // false = not reversed
 motor rightMotor = motor(motorPort2, ratio18_1, true);  // true = reversed (so both drive forward)
-
 // Controller
 controller Controller = controller(primary);
+
+
 
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
